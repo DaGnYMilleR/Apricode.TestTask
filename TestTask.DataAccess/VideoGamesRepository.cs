@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TestTask.Domain;
 
@@ -10,31 +11,30 @@ namespace TestTask.DataAccess
     public class VideoGamesRepository : IGamesRepository
     {
         private readonly VideoGamesContext context;
+        private readonly IMapper mapper;
 
-        public VideoGamesRepository(VideoGamesContext context)
+        public VideoGamesRepository(VideoGamesContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
         
         public async Task AddAsync(VideoGame game)
         {
-            var g = new DataBaseVideoGame
-                {Name = game.Name, DevelopersStudio = game.DevelopersStudio, Genres = game.Genres};
-            await context.Games.AddAsync(g);
+            await context.Games.AddAsync(mapper.Map<DataBaseVideoGame>(game));
             await context.SaveChangesAsync();
         }
 
         public async Task<VideoGame> GetAsync(string name)
         {
             var game = await context.Games.FirstOrDefaultAsync(x => x.Name == name);
-            return new VideoGame {Name = game.Name, DevelopersStudio = game.DevelopersStudio, Genres = game.Genres};
+            return mapper.Map<VideoGame>(game);
         }
         
         public async Task<IEnumerable<VideoGame>> GetGamesOfGenreAsync(Genre genre)
         {
             var games = await context.Games.Where(x => x.Genres.Contains(genre)).ToListAsync();
-            var res = games.Select(x => new VideoGame
-                {Name = x.Name, DevelopersStudio = x.DevelopersStudio, Genres = x.Genres});
+            var res = games.Select(x => mapper.Map<VideoGame>(x));
             return res;
         }
 
@@ -44,7 +44,7 @@ namespace TestTask.DataAccess
             game.DevelopersStudio = newData.NewCompanyName;
             game.Genres = newData.NewGenres;
             await context.SaveChangesAsync();
-            return new VideoGame {Name = game.Name, DevelopersStudio = game.DevelopersStudio, Genres = game.Genres};
+            return mapper.Map<VideoGame>(game);
         }
 
         public async Task DeleteAsync(string name)

@@ -12,7 +12,7 @@ namespace TestTask.WebApi.Controllers
     {
         private readonly IGamesService gamesService;
 
-        public GamesController(IGamesService gamesService) //add mapper
+        public GamesController(IGamesService gamesService)
         {
             this.gamesService = gamesService;
         }
@@ -75,13 +75,11 @@ namespace TestTask.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        
         [HttpGet("genres/{genre}")]
-        public async Task<ActionResult<List<VideoGame>>> GetGamesOfStringGenreAsync([FromRoute] string genre)
+        public async Task<ActionResult<IEnumerable<VideoGame>>> GetGamesOfGenreAsync([FromRoute] Genre genre)
         {
-            if (!Enum.TryParse<Genre>(genre, true, out var res))
-                return BadRequest($"No such genre: {genre}");
-            var games = await gamesService.GetAllGamesOfGenre(res);
+            var games = await gamesService.GetAllGamesOfGenre(genre);
             return Ok(games);
         }
     }

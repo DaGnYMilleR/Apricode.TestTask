@@ -38,8 +38,8 @@ namespace TestTask.Domain
         public async Task DeleteGameAsync(string name)
         {
             if (await repository.IsGameExistsAsync(name))
-                throw new ArgumentException($"game with name \"{name}\" doesn't exists");
-            await repository.DeleteAsync(name);
+                await repository.DeleteAsync(name);
+            throw new ArgumentException($"game with name \"{name}\" doesn't exists");
         }
 
         public async Task<IEnumerable<VideoGame>> GetAllGamesOfGenre(Genre genre) 
