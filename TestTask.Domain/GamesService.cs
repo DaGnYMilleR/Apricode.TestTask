@@ -15,40 +15,34 @@ namespace TestTask.Domain
         
         public async Task CreateGameAsync(VideoGame game)//TODO add errors handling
         {
-            await repository.AddAsync(game);
+            if(!await repository.IsGameExistsAsync(game.Name))
+                await repository.AddAsync(game);
+            else
+                throw new ArgumentException($"game with name \"{game.Name}\" already exists");
         }
 
         public async Task<VideoGame> GetGameAsync(string name)//TODO add errors handling
         {
-            return await repository.GetAsync(name);
+            if(await repository.IsGameExistsAsync(name))
+                return await repository.GetAsync(name);
+            throw new ArgumentException($"game with name \"{name}\" doesn't exists");
         }
 
         public async Task<VideoGame> UpdateGameAsync(string name, UpdateData newData)//TODO add errors handling
         {
-            return await repository.UpdateAsync(name, newData);
+            if(await repository.IsGameExistsAsync(name))
+                return await repository.UpdateAsync(name, newData);
+            throw new ArgumentException($"game with name \"{name}\" doesn't exists");
         }
 
-        public async Task<bool> DeleteGameAsync(string name)
+        public async Task DeleteGameAsync(string name)
         {
-            try
-            {
-                await repository.DeleteAsync(name);
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
+            if (await repository.IsGameExistsAsync(name))
+                throw new ArgumentException($"game with name \"{name}\" doesn't exists");
+            await repository.DeleteAsync(name);
         }
 
-        public async Task<IEnumerable<VideoGame>> GetAllGamesOfGenre(Genre genre)
-        {
-            return await repository.GetGamesOfGenreAsync(genre);
-        }
-
-        /*public async Task<IEnumerable<VideoGame>> GetAllGames()
-        {
-            return await repository.GetGamesAsync(g => true);
-        }*/
+        public async Task<IEnumerable<VideoGame>> GetAllGamesOfGenre(Genre genre) 
+            => await repository.GetGamesOfGenreAsync(genre);
     }
 }

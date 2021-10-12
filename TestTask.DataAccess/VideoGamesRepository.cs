@@ -27,8 +27,7 @@ namespace TestTask.DataAccess
         public async Task<VideoGame> GetAsync(string name)
         {
             var game = await context.Games.FirstOrDefaultAsync(x => x.Name == name);
-            var g = new VideoGame {Name = game.Name, DevelopersStudio = game.DevelopersStudio, Genres = game.Genres};
-            return g;
+            return new VideoGame {Name = game.Name, DevelopersStudio = game.DevelopersStudio, Genres = game.Genres};
         }
         
         public async Task<IEnumerable<VideoGame>> GetGamesOfGenreAsync(Genre genre)
@@ -38,13 +37,6 @@ namespace TestTask.DataAccess
                 {Name = x.Name, DevelopersStudio = x.DevelopersStudio, Genres = x.Genres});
             return res;
         }
-
-        private async Task<IEnumerable<DataBaseVideoGame>> GetGamesAsync(Predicate<DataBaseVideoGame> condition)
-        {
-            var games = await context.Games.Where(x => condition(x)).ToListAsync();
-            return games;
-        }
-
 
         public async Task<VideoGame> UpdateAsync(string name, UpdateData newData)
         {
@@ -60,6 +52,11 @@ namespace TestTask.DataAccess
             var game = await context.Games.FirstOrDefaultAsync(x => x.Name == name);
             context.Games.Remove(game);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsGameExistsAsync(string name)
+        {
+            return await context.Games.AnyAsync(x => x.Name == name);
         }
     }
 }//TODO в базе данных - своя сущность игры с Id

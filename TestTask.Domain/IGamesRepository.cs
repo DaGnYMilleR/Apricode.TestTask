@@ -11,5 +11,6 @@ namespace TestTask.Domain
         Task<IEnumerable<VideoGame>> GetGamesOfGenreAsync(Genre genre);
         Task<VideoGame> UpdateAsync(string name, UpdateData newData);
         Task DeleteAsync(string name);
+        Task<bool> IsGameExistsAsync(string name);
     }
 }

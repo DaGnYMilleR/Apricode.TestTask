@@ -8,7 +8,7 @@ namespace TestTask.Domain
         Task CreateGameAsync(VideoGame game);
         Task<VideoGame> GetGameAsync(string name);
         Task<VideoGame> UpdateGameAsync(string name, UpdateData newData);
-        Task<bool> DeleteGameAsync(string name);
+        Task DeleteGameAsync(string name);
         Task<IEnumerable<VideoGame>> GetAllGamesOfGenre(Genre genre);
     }
 }
